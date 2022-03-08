@@ -35,9 +35,14 @@
             let long = position.coords.longitude;
             let url = "https://secure.geonames.org/findNearbyPostalCodesJSON?lat=" + lat + "&lng=" +  long + "&username=theaccount"
             $.getJSON(url, function(data) {
-                x = data.postalCodes[0].postalCode;
-                getPostalData(x);
-                document.getElementById("JN").innerHTML = x;
+                if(data.postalCodes.length > 0 && data.postalCodes[0].countryCode == "NO") {
+                    x = data.postalCodes[0].postalCode;
+                    getPostalData(x);
+                    document.getElementById("JN").innerHTML = x;
+                } else {
+                    x = "Vet Ikke";
+                    document.getElementById("JN").innerHTML = x;
+                }
             });
         }
 
