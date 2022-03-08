@@ -42,17 +42,23 @@
         }
 
         function getPostalData(zipCode) {
-            let url = "https://www.posten.no/levering-av-post/_/component/main/1/leftRegion/1?postCode=" + zipCode;
+            let url = "https://cors-anywhere.herokuapp.com/https://www.posten.no/levering-av-post/_/component/main/1/leftRegion/1?postCode=" + zipCode;
             console.log(url)
 
             $.ajax({
-                beforeSend: function(request) {
-                    request.setRequestHeader("x-requested-with", 'XMLHttpRequest');
+                headers: {
+                    'x-requested-with': 'XMLHttpRequest',
                 },
                 dataType: "json",
                 url: url,
                 success: function(data) {
-                    document.getElementById("JN").innerHTML = data;
+                    console.log(data.nextDeliveryDays[0])
+                    if(data.nextDeliveryDays[0].startsWith('i dag')) {
+                        x = "Ja";
+                    } else {
+                        x = "Nei";
+                    }
+                    document.getElementById("JN").innerHTML = x;
                 }
             });
         }
