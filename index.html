@@ -50,7 +50,7 @@
         }
 
         function getPostalData(zipCode) {
-            let url = "https://cors-anywhere.herokuapp.com/https://www.posten.no/levering-av-post/_/component/main/1/leftRegion/1?postCode=" + zipCode;
+            let url = "https://api.cors-hdr.workers.dev?https://www.posten.no/levering-av-post/_/component/main/1/leftRegion/1?postCode=" + zipCode;
 
             $.ajax({
                 headers: {
