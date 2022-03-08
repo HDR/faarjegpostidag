@@ -48,7 +48,6 @@
 
         function getPostalData(zipCode) {
             let url = "https://cors-anywhere.herokuapp.com/https://www.posten.no/levering-av-post/_/component/main/1/leftRegion/1?postCode=" + zipCode;
-            console.log(url)
 
             $.ajax({
                 headers: {
@@ -57,7 +56,6 @@
                 dataType: "json",
                 url: url,
                 success: function(data) {
-                    console.log(data.nextDeliveryDays[0])
                     if(data.nextDeliveryDays[0].startsWith('i dag')) {
                         x = "Ja";
                     } else {
