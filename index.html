@@ -29,6 +29,16 @@
 <body>
 <div class="child">
     <p id="JN"></p>
+    <script>
+        navigator.permissions.query({ name: 'geolocation' }).then( perm => {
+            if(perm.state != 'granted'){
+                document.getElementById("JN").style.fontSize = "20%";
+                document.getElementById("JN").innerHTML = "Ingen tilgang til lokasjonsdata";
+            } else {
+                document.getElementById("JN").style.fontSize = "100%";
+            }
+        })
+    </script>
 
     <script>
         let x = document.getElementById("JN").innerHTML;
