@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Får Jeg Post I Dag?</title>
+    <style>
+        body {background-color: black}
+        .child{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 500px;
+            color: #FFFFFF;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+<div class="child">
+    <p id="JN"></p>
+
+    <script>
+        let x = document.getElementById("JN").innerHTML;
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            x = "Vet Ikke";
+        }
+
+
+        function showPosition(position) {
+            let lat = position.coords.latitude;
+            let long = position.coords.longitude;
+            let url = "http://api.geonames.org/findNearbyPostalCodesJSON?lat=" + lat + "&lng=" +  long + "&username=theaccount"
+            $.getJSON(url, function(data) {
+                x = data.postalCodes[0].postalCode;
+                getPostalData(x);
+                document.getElementById("JN").innerHTML = x;
+            });
+        }
+
+        function getPostalData(zipCode) {
+            let url = "https://www.posten.no/levering-av-post/_/component/main/1/leftRegion/1?postCode=" + zipCode;
+            console.log(url)
+
+            $.ajax({
+                beforeSend: function(request) {
+                    request.setRequestHeader("x-requested-with", 'XMLHttpRequest');
+                },
+                dataType: "json",
+                url: url,
+                success: function(data) {
+                    document.getElementById("JN").innerHTML = data;
+                }
+            });
+        }
+
+    </script>
+</div>
+</body>
+</html>
