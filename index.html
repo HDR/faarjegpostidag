@@ -30,19 +30,28 @@
 <div class="child">
     <p id="JN"></p>
     <script>
-        navigator.permissions.query({ name: 'geolocation' }).then( perm => {
-            if(perm.state != 'granted'){
-                document.getElementById("JN").style.fontSize = "20%";
-                document.getElementById("JN").innerHTML = "Ingen tilgang til lokasjonsdata";
-            } else {
-                document.getElementById("JN").style.fontSize = "100%";
-            }
-        })
+        const params = new URLSearchParams(window.location.search);
+
+        if(!params.has('zip')) {
+            navigator.permissions.query({ name: 'geolocation' }).then( perm => {
+                if(perm.state != 'granted'){
+                    document.getElementById("JN").style.fontSize = "20%";
+                    document.getElementById("JN").innerHTML = "Ingen tilgang til lokasjonsdata";
+                } else {
+                    document.getElementById("JN").style.fontSize = "100%";
+                }
+            })
+        }
     </script>
 
     <script>
+
         let x = document.getElementById("JN").innerHTML;
-        if (navigator.geolocation) {
+        if(params.has('zip')) {
+            x = params.get('zip');
+            getPostalData(x);
+            document.getElementById("JN").innerHTML = x;
+        } else if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition);
         } else {
             x = "Vet Ikke";
