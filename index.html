@@ -61,7 +61,7 @@
         function showPosition(position) {
             let lat = position.coords.latitude;
             let long = position.coords.longitude;
-            let url = "https://secure.geonames.org/findNearbyPostalCodesJSON?lat=" + lat + "&lng=" +  long + "&username=theaccount"
+            let url = "http://api.geonames.org/findNearbyPostalCodesJSON?lat=" + lat + "&lng=" +  long + "&username=theaccount"
             $.getJSON(url, function(data) {
                 if(data.postalCodes.length > 0 && data.postalCodes[0].countryCode == "NO") {
                     x = data.postalCodes[0].postalCode;
