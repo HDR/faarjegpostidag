@@ -49,7 +49,7 @@
         let x = document.getElementById("JN").innerHTML;
         if(params.has('zip')) {
             x = params.get('zip');
-            getPostalData(x);
+            //getPostalData(x);
             document.getElementById("JN").innerHTML = x;
         } else if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition);
@@ -73,23 +73,45 @@
                 }
             });
         }
-
-        function getPostalData(zipCode) {
-            let url = "https://api.cors-hdr.workers.dev?https://www.posten.no/levering-av-post/_/service/no.posten.website/delivery-days?postalCode=" + zipCode;
+        
+        function getKey() {
 
             $.ajax({
-                headers: {
-                    'kp-api-token': 'AAAAAAAAMTY4MjYwMDYyNA',
-                },
-                dataType: "json",
-                url: url,
+                dataType: "html",
+                url: "https://api.cors-hdr.workers.dev?https://www.posten.no/levering-av-post",
                 success: function(data) {
-                    if(data.delivery_dates[0].slice(-2) === new Intl.DateTimeFormat('en-us', {day: '2-digit'}).format(new Date)) {
-                        x = "Ja";
-                    } else {
-                        x = "Nei";
-                    }
-                    document.getElementById("JN").innerHTML = x;
+                    let fetchraw = $(data).filter(function(){return $(this).attr('data-react4xp-ref') === 'parts_mailbox-delivery__main_1_leftRegion_11'})[0]
+                    const apiKey = JSON.parse(fetchraw.innerText).props.apiKey;
+                    return apiKey;
+                }
+            });
+        }
+        
+        function getPostalData(zipCode) {
+        
+            let apiKey;
+            $.ajax({
+                dataType: "html",
+                url: "https://api.cors-hdr.workers.dev?https://www.posten.no/levering-av-post",
+                success: function(data) {
+                    let fetchraw = $(data).filter(function(){return $(this).attr('data-react4xp-ref') === 'parts_mailbox-delivery__main_1_leftRegion_11'})[0]
+                    apiKey = JSON.parse(fetchraw.innerText).props.apiKey;
+                    $.ajax({
+                        headers: {
+                            'kp-api-token': apiKey,
+                        },
+                        dataType: "json",
+                        url: "https://api.cors-hdr.workers.dev?https://www.posten.no/levering-av-post/_/service/no.posten.website/delivery-days?postalCode=" + zipCode,
+                        success: function(data) {
+                            if(data.delivery_dates[0].slice(-2) === new Intl.DateTimeFormat('en-us', {day: '2-digit'}).format(new Date)) {
+                                x = "Ja";
+                            } else {
+                                x = "Nei";
+                            }
+                            document.getElementById("JN").innerHTML = x;
+                            console.log("apiKey: " + apiKey)
+                        }
+                    });
                 }
             });
         }
