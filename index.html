@@ -49,7 +49,7 @@
         let x = document.getElementById("JN").innerHTML;
         if(params.has('zip')) {
             x = params.get('zip');
-            //getPostalData(x);
+            getPostalData(x);
             document.getElementById("JN").innerHTML = x;
         } else if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition);
