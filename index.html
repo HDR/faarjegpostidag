@@ -74,19 +74,6 @@
             });
         }
         
-        function getKey() {
-
-            $.ajax({
-                dataType: "html",
-                url: "https://api.cors-hdr.workers.dev?https://www.posten.no/levering-av-post",
-                success: function(data) {
-                    let fetchraw = $(data).filter(function(){return $(this).attr('data-react4xp-ref') === 'parts_mailbox-delivery__main_1_leftRegion_11'})[0]
-                    const apiKey = JSON.parse(fetchraw.innerText).props.apiKey;
-                    return apiKey;
-                }
-            });
-        }
-        
         function getPostalData(zipCode) {
         
             let apiKey;
@@ -94,7 +81,7 @@
                 dataType: "html",
                 url: "https://api.cors-hdr.workers.dev?https://www.posten.no/levering-av-post",
                 success: function(data) {
-                    let fetchraw = $(data).filter(function(){return $(this).attr('data-react4xp-ref') === 'parts_mailbox-delivery__main_1_leftRegion_11'})[0]
+                    let fetchraw = $(data).filter(function(){return $(this).attr('data-react4xp-ref') === 'parts_mailbox-delivery__main_1_leftRegion_12'})[0]
                     apiKey = JSON.parse(fetchraw.innerText).props.apiKey;
                     $.ajax({
                         headers: {
