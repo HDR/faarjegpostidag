@@ -22,11 +22,28 @@
             bottom: 20px;
             right: 20px;
         }
+        .bottom-left {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 80px;
+            color: #FFFFFF;
+        }
+        p {
+            margin: 0px;
+            padding: 0px;
+        }
+        a {
+            color: chartreuse;
+        }
     </style>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
+<div class="bottom-left">
+    <p id="ZIP"></p>
+</div>
 <div class="child">
     <p id="JN"></p>
     <script>
@@ -68,39 +85,45 @@
                     getPostalData(x);
                     document.getElementById("JN").innerHTML = x;
                 } else {
-                    x = "Vet Ikke";
-                    document.getElementById("JN").innerHTML = x;
+                    document.getElementById("JN").innerHTML = "Vet Ikke";
                 }
             });
         }
         
-        function getPostalData(zipCode) {
+        const postenUrl = 'https://api.cors-hdr.workers.dev?https://www.posten.no/levering-av-post';
         
+        async function getPostalData(zipCode) {
+          try {
             let apiKey;
-            $.ajax({
-                dataType: "html",
-                url: "https://api.cors-hdr.workers.dev?https://www.posten.no/levering-av-post",
-                success: function(data) {
-                    let fetchraw = $(data).filter(function(){return $(this).attr('data-react4xp-ref') === 'parts_mailbox-delivery__main_1_leftRegion_12'})[0]
-                    apiKey = JSON.parse(fetchraw.innerText).props.apiKey;
-                    $.ajax({
-                        headers: {
-                            'kp-api-token': apiKey,
-                        },
-                        dataType: "json",
-                        url: "https://api.cors-hdr.workers.dev?https://www.posten.no/levering-av-post/_/service/no.posten.website/delivery-days?postalCode=" + zipCode,
-                        success: function(data) {
-                            if(data.delivery_dates[0].slice(-2) === new Intl.DateTimeFormat('en-us', {day: '2-digit'}).format(new Date)) {
-                                x = "Ja";
-                            } else {
-                                x = "Nei";
-                            }
-                            document.getElementById("JN").innerHTML = x;
-                            console.log("apiKey: " + apiKey)
-                        }
-                    });
-                }
+            await fetch(postenUrl)
+                .then(response => response.text())
+                .then(text => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, 'text/html');
+                    apiKey = JSON.parse(doc.querySelector('script[data-react4xp-ref^="parts_mailbox-delivery"]').textContent).props.apiKey;
+                })
+                    
+            const response = await fetch(`${postenUrl}/_/service/no.posten.website/delivery-days?postalCode=${zipCode}`, {
+              headers: {
+                'kp-api-token': apiKey,
+              },
             });
+            const data = await response.json();
+            const deliveryDate = data.delivery_dates[0];
+            const today = new Date().toLocaleDateString('en-US', {day: '2-digit'});
+            const x = (deliveryDate.slice(-2) === today) ? 'Ja' : 'Nei';
+            document.getElementById('JN').innerHTML = x;
+            document.getElementById('ZIP').innerHTML = `${zipCode} (Feil?)`;
+            document.getElementById('ZIP').innerHTML = `Postkode: ${zipCode} (<a href="javascript:setZip()">Feil?</a>)`
+            console.log(`API Key Used: ${apiKey}`);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+        
+        function setZip() {
+            let postalCode = prompt("Skriv inn Postkode");
+            getPostalData(postalCode);
         }
 
     </script>
